@@ -3,8 +3,9 @@ package se.lexicon;
 import java.util.List;
 
 /**
- * Hello world!
- *
+ * Starting point of the application
+ *  Subscriber, SubscriberDAO, SubscriberFilter
+ *  SubscriberAction, SubscriberProcessor
  */
 public class App 
 {
@@ -23,17 +24,20 @@ public class App
         subscriberDAO.save(new Subscriber(4, "dave@email", Plan.FREE, false,0));
         List<Subscriber> activeSubscriber = processor.findSubscribers(subscriberDAO.findAll(), activeSubscriberFilter);
 
+        // Print results of active subscribers
         System.out.println("1- Active Subscribers:");
         for (Subscriber subscriber: activeSubscriber){
             System.out.println(subscriber);
         }
 
+        // Print results of expiring subscribers
         List<Subscriber> expiringSubscribers = processor.findSubscribers(subscriberDAO.findAll(), expiringSubscribersFilter);
         System.out.println("2- Expiring Subscribers:");
         for (Subscriber subscriber: expiringSubscribers){
             System.out.println(subscriber);
         }
 
+        // Print results of active and expiring subscribers
         List<Subscriber> activeAndExpiringSubscribers =processor.findSubscribers(subscriberDAO.findAll(),
                 subscriber -> (
             activeSubscriberFilter.matches(subscriber) && expiringSubscribersFilter.matches(subscriber)));
@@ -42,6 +46,8 @@ public class App
         for (Subscriber subscriber: activeAndExpiringSubscribers){
             System.out.println(subscriber);
         }
+
+        // Print results of subscribers with FREE plan
         List<Subscriber> subscriberMatchesByPlan = processor.findSubscribers(subscriberDAO.findAll(),
                 subscriber -> subscriber.getPlan() == Plan.FREE);
 
@@ -50,6 +56,7 @@ public class App
             System.out.println(subscriber);
         }
 
+        // Print results of paying subscribers with BASIC or PRO plan
         List<Subscriber> payingSubscribers = processor.findSubscribers(subscriberDAO.findAll(),
                 subscriber -> subscriber.getPlan() == Plan.BASIC || subscriber.getPlan() == Plan.PRO);
 
@@ -58,9 +65,11 @@ public class App
             System.out.println(subscriber);
         }
 
+        // Extending expiring subscribers by 2 months
         List<Subscriber> extendingSubscribers = processor.applyToMatching(subscriberDAO.findAll(), expiringSubscribersFilter,
                 extendingSubscribersAction);
 
+        // Print results of extending subscribers
         System.out.println("6- Extending Expiring Subscribers by 2 months:");
         for (Subscriber subscriber: extendingSubscribers){
             System.out.println(subscriber);
